@@ -19,9 +19,9 @@
 /*
 Please specify the group members here
 
-# Student #1:
-# Student #2:
-# Student #3:
+# Student #1: Levi Sandidge
+# Student #2: Brett Carson
+# Student #3: Leighanne Lyvers
 
 */
 
@@ -115,6 +115,19 @@ void run_server() {
      * Server creates listening socket and epoll instance.
      * Server registers the listening socket to epoll
      */
+    int server_sock_fd;
+    if ((server_sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+        perror("Failed to Create Socket");
+    }
+
+    int epollfd = epoll_create1(0);
+    if (epollfd < 0) {
+        perror("epoll_create1");
+    }
+
+    struct sockaddr_in server_addr;
+
+    bind(server_sock_fd, );
 
     /* Server's run-to-completion event loop */
     while (1) {
