@@ -65,10 +65,6 @@ void *client_thread_func(void *arg)
     char received_message[MESSAGE_SIZE];
     struct timeval request_start_time, request_end_time;
 
-    /* TODO:
-     * It sends messages to the server, waits for a response using epoll,
-     * and measures the round-trip time (RTT) of this request-response.
-     */
 
     // Monitor events for incoming data, associated with corresponding socket, and register the "connected"
     // client_thread's socket in its epoll instance
@@ -146,10 +142,6 @@ void *client_thread_func(void *arg)
         }
     }
 
-    /* TODO:
-     * The function exits after sending and receiving a predefined number of messages (num_requests). 
-     * It calculates the request rate based on total messages and RTT
-     */
 
     // Now that all requests from client to server have been made, we can calculate request rate 
     // If at least one message was sent, calculate request rate
@@ -258,11 +250,31 @@ void run_client()
 
     // Report all results for the client
     printf("Client completed. Aggregated results:\n");
+    
+    // Print request rate(), RTT, and the validation check for all threads
+    for (int m = 0; m < num_client_threads; m++) 
+    {
+        // Calculate the round trip time for an individual 
+        double Tj = (double)thread_data[m].total_rtt / thread_data[m].total_messages;
+
+        // Calculate the request rate
+        double RPSj = thread_data[m].request_rate;
+
+        // Multiply the individual values for the validation check, Tj needs to be in seconds
+        // the result should be 1
+        double validation_check = RPSj * Tj / 1e6;
+
+        // Converted Tj back to micro seconds so something would appear
+        printf("Thread %d: RPS = %.6f messages/s, RTT = %.6f us, Validation = %.8f\n",
+            m, RPSj, Tj, validation_check);
+    }
+
 
     // If message(s) were sent, calculate the average RTT and report it
     long long average_rtt = 0;
     if (total_messages > 0) 
     {
+        // Average round trip time is determined by the total rtt divided by number of messages sent
         average_rtt = total_rtt / total_messages;
     }
     printf("Average RTT: %lld us\n", average_rtt);
